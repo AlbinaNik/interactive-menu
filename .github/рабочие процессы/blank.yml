@@ -1,0 +1,153 @@
+#include <iostream>
+#include <conio.h>
+#include "windows.h"
+
+using namespace std;
+
+HANDLE hStdOut;
+
+
+void GotoXY(short X, short Y)
+{
+	COORD cp;
+	cp.X = X;
+	cp.Y = Y;
+	SetConsoleCursorPosition(hStdOut, cp);
+}
+
+void SetTextColor(short Color)
+{
+	CONSOLE_SCREEN_BUFFER_INFO inf;
+	Color = Color & 0x0F;
+	GetConsoleScreenBufferInfo(hStdOut, &inf);
+	inf.wAttributes = inf.wAttributes & 0xF0;
+	inf.wAttributes = inf.wAttributes | Color;
+	SetConsoleTextAttribute(hStdOut, inf.wAttributes);
+}
+
+void SetTextBackground(short Color)
+{
+	CONSOLE_SCREEN_BUFFER_INFO inf;
+	Color = Color & 0x0F;
+	GetConsoleScreenBufferInfo(hStdOut, &inf);
+	inf.wAttributes = inf.wAttributes & 0x0F;
+	inf.wAttributes = inf.wAttributes | (Color << 4);
+	SetConsoleTextAttribute(hStdOut, inf.wAttributes);
+}
+
+void HideCursor()
+{
+	CONSOLE_CURSOR_INFO structCursorInfo;
+	GetConsoleCursorInfo(hStdOut, &structCursorInfo);
+	structCursorInfo.bVisible = FALSE;
+	SetConsoleCursorInfo(hStdOut, &structCursorInfo);
+}
+
+void UnHideCursor()
+{
+	CONSOLE_CURSOR_INFO structCursorInfo;
+	GetConsoleCursorInfo(hStdOut, &structCursorInfo);
+	structCursorInfo.bVisible = TRUE;
+	SetConsoleCursorInfo(hStdOut, &structCursorInfo);
+}
+
+
+void Auth()
+{
+StartAuth:
+#define MC 3
+#define MNX 40
+#define MNY 10
+	setlocale(LC_ALL, "Russian");
+	system("cls");
+	cout << endl << "\t\t\t           ПОЧЕМУ ЛЮДИ ОПАЗДЫВАЮТ";
+	char mn[MC][16] =
+	{
+			{"ПРЕДПОСЫЛКИ"},
+			{"ПРИЧИНЫ"},
+			{"СЛЕДСТВИЕ"}
+	};
+	GotoXY(MNX, MNY);
+	SetTextColor(15);
+	SetTextBackground(0);
+	for (int i = 0; i < MC; i++)
+	{
+		cout << mn[i];
+		GotoXY(MNX, MNY + (i + 1) * 2);
+	}
+	int ypos = 0;
+	SetTextBackground(15);
+	SetTextColor(0);
+	GotoXY(MNX, MNY);
+	cout << mn[ypos];
+	while (1)
+	{
+		char x = _getch();
+		if (x == 13)
+		{
+			SetTextBackground(0);
+			SetTextColor(7);
+			setlocale(LC_ALL, "C");
+			switch (ypos)
+			{
+			case 0:
+			{
+			
+			}
+			case 1:
+			{
+				
+			}
+			default:
+			{
+				exit(0);
+			}
+			}
+		}
+		if (x == 27)
+		{
+			SetTextBackground(0);
+			SetTextColor(15);
+			setlocale(LC_ALL, "C");
+			exit(0);
+		}
+		if (x == 72)
+		{
+			SetTextBackground(0);
+			SetTextColor(15);
+			GotoXY(MNX, MNY + (ypos) * 2);
+			cout << mn[ypos];
+			ypos--;
+			if (ypos < 0) ypos = MC - 1;
+			SetTextBackground(15);
+			SetTextColor(0);
+			GotoXY(MNX, MNY + (ypos) * 2);
+			cout << mn[ypos];
+		}
+		if (x == 80)
+		{
+			SetTextBackground(0);
+			SetTextColor(15);
+			GotoXY(MNX, MNY + (ypos) * 2);
+			cout << mn[ypos];
+			ypos++;
+			if (ypos > MC - 1) ypos = 0;
+			SetTextBackground(15);
+			SetTextColor(0);
+			GotoXY(MNX, MNY + (ypos) * 2);
+			cout << mn[ypos];
+		}
+	}
+}
+
+
+int main()
+{
+	short errVar = 0;
+	hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	system("mode con cols=101 lines=31");
+	UnHideCursor();
+	HideCursor();
+	Auth();
+	system("pause");
+}
